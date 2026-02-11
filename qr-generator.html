@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de QR - Valla Publicitaria</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .info {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .qr-container {
+      text-align: center;
+      margin: 30px 0;
+    }
+    
+    #qr-code {
+      display: inline-block;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .url-display {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      word-break: break-all;
+      font-family: monospace;
+      border: 2px solid #e0e0e0;
+    }
+    
+    .instructions {
+      background: #fff3cd;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #ffc107;
+      margin-top: 30px;
+    }
+    
+    .instructions h3 {
+      margin-top: 0;
+      color: #856404;
+    }
+    
+    .instructions ol {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    
+    .instructions li {
+      margin: 8px 0;
+      color: #856404;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+      transition: transform 0.2s;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔗 Generador de Código QR</h1>
+    
+    <div class="info">
+      <p><strong>Para desarrollo local:</strong></p>
+      <p>Escanea este código QR con tu móvil para acceder a la página de envío de mensajes.</p>
+      <p><strong>Nota:</strong> Tu móvil debe estar en la misma red WiFi que tu computadora.</p>
+    </div>
+
+    <div class="url-display" id="url-display">
+      Cargando URL...
+    </div>
+
+    <div class="qr-container">
+      <div id="qr-code"></div>
+    </div>
+
+    <div style="text-align: center;">
+      <button onclick="downloadQR()">📥 Descargar QR</button>
+      <button onclick="printQR()">🖨️ Imprimir QR</button>
+    </div>
+
+    <div class="instructions">
+      <h3>📋 Instrucciones para Producción:</h3>
+      <ol>
+        <li>Despliega tu proyecto en un servidor público (Vercel, Netlify, etc.)</li>
+        <li>Obtén la URL pública de tu página <code>send.html</code></li>
+        <li>Usa un generador de QR online:
+          <ul>
+            <li><a href="https://www.qr-code-generator.com/" target="_blank">QR Code Generator</a></li>
+            <li><a href="https://www.qrcode-monkey.com/" target="_blank">QR Code Monkey</a></li>
+          </ul>
+        </li>
+        <li>Imprime el código QR y colócalo cerca de la valla publicitaria</li>
+      </ol>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    // Obtener la IP local
+    async function getLocalIP() {
+      try {
+        // Intentar obtener la IP desde el servidor de desarrollo de Vite
+        const response = await fetch('/');
+        const url = new URL(window.location.href);
+        return url.hostname;
+      } catch (error) {
+        return 'localhost';
+      }
+    }
+
+    async function generateQR() {
+      const hostname = await getLocalIP();
+      const port = window.location.port || '5173';
+      const url = `http://${hostname}:${port}/send.html`;
+      
+      document.getElementById('url-display').textContent = url;
+      
+      // Generar código QR
+      new QRCode(document.getElementById('qr-code'), {
+        text: url,
+        width: 256,
+        height: 256,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
+    function downloadQR() {
+      const canvas = document.querySelector('#qr-code canvas');
+      if (canvas) {
+        const url = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 'qr-valla-publicitaria.png';
+        link.href = url;
+        link.click();
+      }
+    }
+
+    function printQR() {
+      window.print();
+    }
+
+    // Generar QR al cargar la página
+    generateQR();
+  </script>
+</body>
+</html>
