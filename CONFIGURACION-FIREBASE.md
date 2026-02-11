@@ -1,5 +1,18 @@
 # 🔥 Configuración de Firebase Realtime Database
 
+## Paso 0: Configurar Variables de Entorno
+
+Antes de comenzar, asegúrate de tener configurado el archivo `.env`:
+
+1. Copia el archivo de ejemplo:
+```bash
+copy .env.example .env
+```
+
+2. Edita `.env` con tus credenciales de Firebase
+
+Para más detalles, consulta [VARIABLES-ENTORNO.md](VARIABLES-ENTORNO.md).
+
 ## Paso 1: Configurar Reglas de Seguridad
 
 1. Ve a [Firebase Console](https://console.firebase.google.com/)

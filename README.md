@@ -4,6 +4,8 @@ Sistema de mensajería en tiempo real para valla publicitaria con efectos visual
 
 ![Gommage Effect](https://tympanus.net/codrops/wp-content/uploads/2026/01/gommage-1.webp)
 
+> 🚀 **[Ver Guía de Inicio Rápido](INICIO-RAPIDO.md)** para empezar en 5 minutos
+
 ## ✨ Características
 
 - 🔥 Mensajes en tiempo real con Firebase
@@ -21,6 +23,15 @@ Sistema de mensajería en tiempo real para valla publicitaria con efectos visual
 npm install
 ```
 
+### Configuración de Firebase
+
+1. Copia el archivo de ejemplo de variables de entorno:
+```bash
+copy .env.example .env
+```
+
+2. Edita el archivo `.env` con tus credenciales de Firebase (ver [VARIABLES-ENTORNO.md](VARIABLES-ENTORNO.md))
+
 ### Desarrollo
 
 ```bash
@@ -30,6 +41,8 @@ npm run dev
 El servidor se iniciará en `http://localhost:5173`
 
 ## 📱 Páginas del Sistema
+
+> 🌐 **Para desplegar en Netlify**: Ver [RESUMEN-NETLIFY.md](RESUMEN-NETLIFY.md) y [DEPLOY-NETLIFY.md](DEPLOY-NETLIFY.md)
 
 ### 1. Valla Publicitaria (index.html)
 - **URL**: `http://localhost:5173/`
@@ -59,7 +72,14 @@ El servidor se iniciará en `http://localhost:5173`
 ## 🔧 Configuración
 
 ### Firebase
-Las credenciales ya están configuradas en `src/firebase.js`. La estructura de datos es:
+
+Las credenciales de Firebase se configuran mediante variables de entorno en el archivo `.env`.
+
+**Importante**: Nunca subas el archivo `.env` a Git. Usa `.env.example` como plantilla.
+
+Para más detalles, consulta [VARIABLES-ENTORNO.md](VARIABLES-ENTORNO.md).
+
+La estructura de datos en Firebase es:
 
 ```
 billboard-messages/
@@ -102,19 +122,25 @@ http://localhost:5173/qr-generator.html
 
 ### Para Producción
 
-1. Construir el proyecto:
+1. Verificar y construir el proyecto:
 ```bash
-npm run build
+npm run deploy
 ```
 
+Esto ejecutará verificaciones automáticas y construirá el proyecto.
+
 2. Desplegar en tu hosting preferido:
+   - **Netlify** (Recomendado): Ver [DEPLOY-NETLIFY.md](DEPLOY-NETLIFY.md) - Guía completa paso a paso
    - Vercel: `vercel deploy`
-   - Netlify: Arrastrar carpeta `dist/`
    - Firebase Hosting: `firebase deploy`
 
-3. Generar QR con la URL pública de `send.html` (o usar el QR que aparece automáticamente en la valla)
+3. **Importante**: Configurar variables de entorno en tu plataforma de hosting
+   - Ver `.env.netlify.example` para Netlify
+   - Todas las variables deben empezar con `VITE_`
 
-4. Imprimir y colocar el QR cerca de la valla (opcional, ya que la valla muestra el QR cuando no hay mensajes)
+4. Generar QR con la URL pública de `send.html` (o usar el QR que aparece automáticamente en la valla)
+
+5. Imprimir y colocar el QR cerca de la valla (opcional, ya que la valla muestra el QR cuando no hay mensajes)
 
 ## 🎨 Personalización
 

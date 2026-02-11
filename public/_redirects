@@ -1,0 +1,10 @@
+# Netlify redirects file
+# Asegura que las rutas HTML funcionen correctamente
+
+# Las páginas HTML deben servirse directamente
+/send.html /send.html 200
+/qr-generator.html /qr-generator.html 200
+/test-firebase.html /test-firebase.html 200
+
+# Fallback para otras rutas
+/* /index.html 200

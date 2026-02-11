@@ -3,15 +3,22 @@ import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue, push, set } from 'firebase/database';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCogkgz7k0qxQDJp1_zXqX3Azo1IQ5TCYE",
-  authDomain: "webinar-chat-5e700.firebaseapp.com",
-  databaseURL: "https://webinar-chat-5e700-default-rtdb.firebaseio.com",
-  projectId: "webinar-chat-5e700",
-  storageBucket: "webinar-chat-5e700.firebasestorage.app",
-  messagingSenderId: "787279273547",
-  appId: "1:787279273547:web:0b5e53b94fa467742437ce",
-  measurementId: "G-6DZ8V1YKD7"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
+
+// Validar que las variables de entorno estén configuradas
+if (!firebaseConfig.apiKey || !firebaseConfig.databaseURL) {
+  console.error('⚠️ Error: Las variables de entorno de Firebase no están configuradas correctamente.');
+  console.error('Por favor, crea un archivo .env en la raíz del proyecto con las credenciales de Firebase.');
+  console.error('Puedes usar .env.example como plantilla.');
+}
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);

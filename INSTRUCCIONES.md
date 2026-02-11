@@ -22,7 +22,14 @@ Sistema de mensajería en tiempo real para valla publicitaria con efecto visual 
 npm install
 ```
 
-2. Iniciar el servidor de desarrollo:
+2. Configurar variables de entorno:
+```bash
+copy .env.example .env
+```
+
+3. Editar el archivo `.env` con tus credenciales de Firebase
+
+4. Iniciar el servidor de desarrollo:
 ```bash
 npm run dev
 ```
