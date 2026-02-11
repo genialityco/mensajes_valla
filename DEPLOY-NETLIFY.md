@@ -40,7 +40,7 @@ Netlify debería detectar automáticamente la configuración desde `netlify.toml
 
 - **Build command**: `npm run build`
 - **Publish directory**: `dist`
-- **Node version**: 18
+- **Node version**: 20 (automático desde `.nvmrc` y `netlify.toml`)
 
 ### Paso 4: Configurar Variables de Entorno
 
@@ -148,6 +148,27 @@ Visita: `https://tu-sitio.netlify.app/test-firebase.html`
 3. Observa el efecto de disolución
 
 ## 🐛 Solución de Problemas
+
+### Error: "crypto.hash is not a function"
+
+**Síntomas**:
+```
+error during build:
+[vite:build-html] crypto.hash is not a function
+```
+
+**Causa**: Versión de Node.js incompatible. Vite 7.x requiere Node 20+.
+
+**Solución**:
+1. Verifica que `netlify.toml` tenga `NODE_VERSION = "20"`
+2. Verifica que existe el archivo `.nvmrc` con el contenido `20`
+3. Verifica que `package.json` tenga:
+   ```json
+   "engines": {
+     "node": ">=20.0.0"
+   }
+   ```
+4. Haz un nuevo deploy: **Deploys** → **Trigger deploy** → **Clear cache and deploy**
 
 ### Error: "Page Not Found" en send.html
 

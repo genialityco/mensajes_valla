@@ -11,7 +11,7 @@
 # IMPORTANTE: Debes configurar estas variables en Netlify UI
 # Site settings → Environment variables
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
 
 # Redirecciones y reglas de reescritura
 [[redirects]]

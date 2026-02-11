@@ -48,7 +48,7 @@ Usa esta lista para asegurarte de que todo esté listo antes de desplegar.
 - [ ] Build settings configurados:
   - Build command: `npm run build`
   - Publish directory: `dist`
-  - Node version: 18
+  - Node version: 20 (automático)
 
 ### Variables de Entorno en Netlify
 
@@ -119,6 +119,16 @@ Usa esta lista para asegurarte de que todo esté listo antes de desplegar.
 - [ ] Configurar branch deploys si usas múltiples ramas
 
 ## 🐛 Si Algo Sale Mal
+
+### Error: "crypto.hash is not a function"
+
+**Causa**: Versión de Node.js incompatible (Vite 7 requiere Node 20+)
+
+**Solución**:
+1. [ ] Verificar que `netlify.toml` tenga `NODE_VERSION = "20"`
+2. [ ] Verificar que existe `.nvmrc` con contenido `20`
+3. [ ] Hacer "Clear cache and deploy" en Netlify
+4. [ ] Si persiste, contactar soporte de Netlify
 
 ### Error: "Page Not Found" en send.html
 

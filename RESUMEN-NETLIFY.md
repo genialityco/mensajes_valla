@@ -110,6 +110,23 @@ Todas las páginas HTML funcionan correctamente:
 - ✅ `https://tu-sitio.netlify.app/qr-generator.html`
 - ✅ `https://tu-sitio.netlify.app/test-firebase.html`
 
+## 🔧 Solución al Error de Build (crypto.hash)
+
+### Problema
+Error durante el build: `crypto.hash is not a function`
+
+### Causa
+Vite 7.x requiere Node.js 20 o superior.
+
+### Solución Implementada
+
+1. **`netlify.toml`** - Especifica `NODE_VERSION = "20"`
+2. **`.nvmrc`** - Archivo con versión de Node (20)
+3. **`package.json`** - Campo `engines` con requisitos de Node
+
+### Resultado
+El build funciona correctamente en Netlify con Node 20.
+
 ## 📋 Verificación Post-Deploy
 
 Después de desplegar, verifica:
