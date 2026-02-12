@@ -209,62 +209,69 @@ a {
   }
 }
 
-/* QR Overlay Styles */
+/* QR Overlay Styles - Arriba a la derecha */
 #qr-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.95);
+  top: 20px;
+  right: 20px;
+  width: auto;
+  height: auto;
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 100;
-  animation: fadeIn 0.5s ease-in-out;
+  border-radius: 15px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(213, 203, 178, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: slideInRight 0.5s ease-out;
 }
 
-@keyframes fadeIn {
+@keyframes slideInRight {
   from {
     opacity: 0;
+    transform: translateX(100px);
   }
   to {
     opacity: 1;
+    transform: translateX(0);
   }
 }
 
 .qr-content {
   text-align: center;
-  padding: 3rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(213, 203, 178, 0.2);
-  max-width: 500px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  backdrop-filter: none;
+  border: none;
+  max-width: 280px;
 }
 
 .qr-content h2 {
   color: var(--color-text);
-  font-size: 2.5rem;
-  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  margin: 0 0 0.5rem 0;
   font-weight: 300;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 
 .qr-content p {
   color: var(--color-text);
-  font-size: 1.2rem;
-  margin: 0 0 2rem 0;
+  font-size: 0.75rem;
+  margin: 0 0 0.8rem 0;
   opacity: 0.8;
 }
 
 #qr-code-display {
   background: white;
-  padding: 20px;
-  border-radius: 15px;
+  padding: 12px;
+  border-radius: 10px;
   display: inline-block;
-  margin: 0 auto 2rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  margin: 0 auto 0.8rem;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
 }
 
 #qr-code-display canvas,
@@ -276,26 +283,94 @@ a {
 
 .qr-url {
   font-family: monospace;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   color: var(--color-link);
   word-break: break-all;
-  padding: 1rem;
+  padding: 0.5rem;
   background: rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
-  margin-top: 1rem;
+  border-radius: 5px;
+  margin-top: 0.5rem;
+}
+
+/* Último mensaje en el centro */
+#last-message-display {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.75);
+  padding: 20px 40px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(213, 203, 178, 0.2);
+  z-index: 99;
+  display: none;
+  animation: fadeInUp 0.5s ease-out;
+  max-width: 80%;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+#last-message-display .message-label {
+  color: rgba(213, 203, 178, 0.7);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+#last-message-display .message-text {
+  color: var(--color-text);
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: 1px;
+  text-align: center;
 }
 
 @media screen and (max-width: 768px) {
+  #qr-overlay {
+    top: 10px;
+    right: 10px;
+    padding: 15px;
+  }
+
   .qr-content {
-    padding: 2rem 1.5rem;
-    margin: 1rem;
+    max-width: 200px;
   }
 
   .qr-content h2 {
-    font-size: 2rem;
+    font-size: 1rem;
+  }
+
+  .qr-content p {
+    font-size: 0.8rem;
   }
 
   #qr-code-display {
-    padding: 15px;
+    padding: 10px;
+  }
+
+  .qr-url {
+    font-size: 0.6rem;
+  }
+
+  #last-message-display {
+    bottom: 20px;
+    padding: 15px 25px;
+    max-width: 90%;
+  }
+
+  #last-message-display .message-text {
+    font-size: 1.2rem;
   }
 }

@@ -68,7 +68,7 @@ export default class PetalParticles {
     this.#spawnPos[id * 3 + 1] = spawnPos.y;
     this.#spawnPos[id * 3 + 2] = spawnPos.z;
     this.#birthLifeSeedScale[id * 4 + 0] = performance.now() * 0.001; // Birth time
-    this.#birthLifeSeedScale[id * 4 + 1] = 6; // Life time
+    this.#birthLifeSeedScale[id * 4 + 1] = 3; // Life time (reducido de 6 a 3 segundos)
     this.#birthLifeSeedScale[id * 4 + 2] = Math.random(); // Random seed
     this.#birthLifeSeedScale[id * 4 + 3] = Math.random() * 0.5 + 0.5; // Scale
 
@@ -109,7 +109,7 @@ export default class PetalParticles {
     const aSeed = aBirthLifeSeedScale.z;
     const aScale = aBirthLifeSeedScale.w;
 
-    const uWindDirection = uniform(new THREE.Vector3(-1, 0, 0).normalize());
+    const uWindDirection = uniform(new THREE.Vector3(0, -1, 0).normalize());
     const uWindStrength = uniform(0.3);
     const uRiseSpeed = uniform(0.1); // constant lift
     const uNoiseScale = uniform(30.0); // start small (frequency)

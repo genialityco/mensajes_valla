@@ -141,6 +141,90 @@
       font-size: 14px;
       line-height: 1.6;
     }
+
+    .queue-section {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+      display: none;
+    }
+
+    .queue-section h3 {
+      margin: 0 0 15px 0;
+      color: #333;
+      font-size: 18px;
+    }
+
+    .queue-info {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .queue-status, .queue-position, .queue-text {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: white;
+      border-radius: 8px;
+    }
+
+    .status-label, .position-label, .text-label {
+      font-weight: bold;
+      color: #666;
+    }
+
+    .status-value {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-approved {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-rejected {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .status-shown {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .position-value {
+      font-size: 20px;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .position-active {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .text-value {
+      font-style: italic;
+      color: #555;
+      max-width: 60%;
+      text-align: right;
+    }
   </style>
 </head>
 <body>

@@ -6,6 +6,8 @@ class QROverlay {
     this.overlay = document.getElementById('qr-overlay');
     this.qrCodeDisplay = document.getElementById('qr-code-display');
     this.qrUrlText = document.getElementById('qr-url-text');
+    this.lastMessageDisplay = document.getElementById('last-message-display');
+    this.lastMessageText = document.getElementById('last-message-text');
     this.qrGenerated = false;
     
     this.init();
@@ -16,12 +18,22 @@ class QROverlay {
     this.generateQR();
     
     // Suscribirse a cambios de estado
-    messageState.subscribe((shouldShowQR, currentMessage) => {
-      console.log('QR Overlay - shouldShowQR:', shouldShowQR, 'mensaje:', currentMessage);
+    messageState.subscribe((shouldShowQR, currentMessage, lastShownMessage) => {
+      console.log('QR Overlay - shouldShowQR:', shouldShowQR, 'mensaje:', currentMessage, 'último:', lastShownMessage);
+      
+      // El QR se muestra siempre excepto durante el efecto
       if (shouldShowQR) {
         this.showQR();
       } else {
         this.hideQR();
+      }
+
+      // El último mensaje ya no se muestra porque el mensaje actual permanece visible
+      // Solo mostrar si no hay mensaje actual
+      if (!currentMessage && lastShownMessage) {
+        this.showLastMessage(lastShownMessage);
+      } else {
+        this.hideLastMessage();
       }
     });
   }
@@ -41,8 +53,8 @@ class QROverlay {
     try {
       new QRCode(this.qrCodeDisplay, {
         text: url,
-        width: 256,
-        height: 256,
+        width: 180,
+        height: 180,
         colorDark: '#000000',
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.H
@@ -65,6 +77,17 @@ class QROverlay {
   hideQR() {
     console.log('Ocultando QR');
     this.overlay.style.display = 'none';
+  }
+
+  showLastMessage(message) {
+    console.log('Mostrando último mensaje:', message);
+    this.lastMessageText.textContent = message;
+    this.lastMessageDisplay.style.display = 'block';
+  }
+
+  hideLastMessage() {
+    console.log('Ocultando último mensaje');
+    this.lastMessageDisplay.style.display = 'none';
   }
 }
 

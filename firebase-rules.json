@@ -1,14 +1,23 @@
 {
   "rules": {
-    "billboard-messages": {
-      "current": {
+    "messages": {
+      "$messageId": {
         ".read": true,
-        ".write": true,
-        ".validate": "newData.hasChildren(['text', 'timestamp'])",
+        ".write": "!data.exists() || data.child('status').val() == 'pending'",
+        ".validate": "newData.hasChildren(['text', 'status', 'createdAt', 'order'])",
         "text": {
           ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50"
         },
-        "timestamp": {
+        "status": {
+          ".validate": "newData.isString() && (newData.val() == 'pending' || newData.val() == 'approved' || newData.val() == 'rejected' || newData.val() == 'shown')"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "order": {
+          ".validate": "newData.isNumber()"
+        },
+        "shownAt": {
           ".validate": "newData.isNumber()"
         }
       }

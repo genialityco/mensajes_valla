@@ -5,11 +5,13 @@ import MSDFText from './msdfText.js';
 import { uniform } from 'three/tsl';
 import DustParticles from './dustParticles.js';
 import PetalParticles from './petalParticles.js';
+import StarParticles from './starParticles.js';
 import Debug, { DEBUG_FOLDERS } from './debug.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import gsap from 'gsap';
-import { listenToCurrentMessage } from './firebase.js';
+import { listenToApprovedMessages, updateMessageStatus } from './firebase.js';
 import { messageState } from './messageState.js';
+import { autoModerator } from './autoModerator.js';
 
 export default class GommageOrchestrator {
   #uProgress = uniform(0.0);
@@ -17,6 +19,7 @@ export default class GommageOrchestrator {
   #MSDFTextEntity = null;
   #DustParticlesEntity = null;
   #PetalParticlesEntity = null;
+  #StarParticlesEntity = null;
 
   #dustInterval = 0.125;
   #petalInterval = 0.05;
@@ -29,6 +32,9 @@ export default class GommageOrchestrator {
   #perlinTexture = null;
   #fontAtlasTexture = null;
   #dustParticleTexture = null;
+  #messageQueue = [];
+  #currentMessage = null;
+  #isShowingMessage = false;
 
   constructor() {}
 
@@ -55,6 +61,11 @@ export default class GommageOrchestrator {
     const petalParticles = await this.#PetalParticlesEntity.initialize(perlinTexture, petalGeometry);
     scene.add(petalParticles);
 
+    // Inicializar estrellas de fondo
+    this.#StarParticlesEntity = new StarParticles();
+    const starParticles = await this.#StarParticlesEntity.initialize();
+    scene.add(starParticles);
+
     const GommageButton = debugFolder.addButton({
       title: 'GOMMAGE',
     });
@@ -66,6 +77,9 @@ export default class GommageOrchestrator {
     });
     const PetalButton = debugFolder.addButton({
       title: 'PETAL',
+    });
+    const RegenerateStarsButton = debugFolder.addButton({
+      title: 'REGENERATE STARS',
     });
     GommageButton.on('click', () => {
       this.triggerGommage();
@@ -80,56 +94,87 @@ export default class GommageOrchestrator {
     PetalButton.on('click', () => {
       this.#PetalParticlesEntity.debugSpawnPetal();
     });
+    RegenerateStarsButton.on('click', () => {
+      this.#StarParticlesEntity.regenerateStars();
+    });
 
-    // Escuchar mensajes de Firebase
-    listenToCurrentMessage((newMessage) => {
-      console.log('Nuevo mensaje recibido:', newMessage);
-      this.updateText(newMessage);
+    // Iniciar auto-moderador
+    autoModerator.start();
+
+    // Escuchar mensajes aprobados de Firebase
+    listenToApprovedMessages((messages) => {
+      console.log('Mensajes aprobados recibidos:', messages);
+      this.#messageQueue = messages;
+      this.processQueue();
     });
   }
 
-  async updateText(newText) {
-    console.log('updateText llamado con:', newText);
+  processQueue() {
+    // Si ya está mostrando un mensaje o no hay mensajes, no hacer nada
+    if (this.#isShowingMessage || this.#messageQueue.length === 0) {
+      return;
+    }
+
+    // Tomar el primer mensaje de la cola
+    const nextMessage = this.#messageQueue[0];
     
-    // Actualizar el estado global
+    if (!nextMessage || nextMessage.status !== 'approved') {
+      return;
+    }
+
+    console.log('Mostrando mensaje:', nextMessage);
+    this.#currentMessage = nextMessage;
+    this.#isShowingMessage = true;
+    
+    this.updateText(nextMessage.text, nextMessage.id);
+  }
+
+async updateText(newText, messageId = null) {
+    console.log('updateText llamado con:', newText, 'messageId:', messageId);
+    
     messageState.setMessage(newText);
     
-    // Si el texto está vacío o es el mensaje inicial, remover el mesh y mostrar QR
     if (!newText || newText.trim() === '' || newText === 'Esperando mensaje...') {
-      if (this.#currentTextMesh) {
+        if (this.#currentTextMesh) {
+            this.#scene.remove(this.#currentTextMesh);
+            this.#currentTextMesh.geometry.dispose();
+            this.#currentTextMesh.material.dispose();
+            this.#currentTextMesh = null;
+        }
+        return;
+    }
+
+    // Limpiar anterior
+    if (this.#currentTextMesh) {
         this.#scene.remove(this.#currentTextMesh);
         this.#currentTextMesh.geometry.dispose();
         this.#currentTextMesh.material.dispose();
         this.#currentTextMesh = null;
-      }
-      return;
     }
 
-    // Remover el mesh actual si existe
-    if (this.#currentTextMesh) {
-      this.#scene.remove(this.#currentTextMesh);
-      this.#currentTextMesh.geometry.dispose();
-      this.#currentTextMesh.material.dispose();
-    }
-
-    // Crear nuevo texto
+    // Crear nuevo texto (aún NO lo añadimos a la escena)
     this.#MSDFTextEntity = new MSDFText();
     const msdfText = await this.#MSDFTextEntity.initialize(
-      newText,
-      new THREE.Vector3(0, 0, 0),
-      this.#uProgress,
-      this.#perlinTexture,
-      this.#fontAtlasTexture
+        newText,
+        new THREE.Vector3(0, 0, 0),
+        this.#uProgress,
+        this.#perlinTexture,
+        this.#fontAtlasTexture
     );
+
     this.#currentTextMesh = msdfText;
+
+    // Importante: preparamos el estado disuelto ANTES de mostrarlo
+    this.#uProgress.value = 1.0;
+
+    // Ahora sí lo añadimos → el usuario solo verá el texto ya disuelto
     this.#scene.add(msdfText);
 
-    // Resetear el progreso y activar el efecto automáticamente
-    this.resetGommage();
-    setTimeout(() => {
-      this.triggerGommage();
-    }, 500);
-  }
+    // Lanzamos la animación inmediatamente (o con muy poco delay si quieres)
+    this.triggerGommage(messageId);
+    // Si aún quieres un pequeño retraso visual puedes dejar:
+    // setTimeout(() => this.triggerGommage(messageId), 50); // o 0~100ms
+}
 
   async loadPetalGeometry() {
     const modelLoader = new GLTFLoader();
@@ -166,14 +211,17 @@ export default class GommageOrchestrator {
     return { perlinTexture, dustParticleTexture, fontAtlasTexture };
   }
 
-  triggerGommage() {
+  triggerGommage(messageId = null) {
     // Don't start if already running
     if (this.#gommageTween || this.#spawnDustTween || this.#spawnPetalTween) return;
-    this.#uProgress.value = 0;
+    
+    // Iniciar desde completamente disuelto (1) hacia visible (0)
+    this.#uProgress.value = 1;
 
     // Notificar que el efecto está corriendo
     messageState.setEffectRunning(true);
 
+    // Iniciar partículas inmediatamente
     this.#spawnDustTween = gsap.to(
       {},
       {
@@ -198,33 +246,49 @@ export default class GommageOrchestrator {
       }
     );
 
-    this.#gommageTween = gsap.to(this.#uProgress, {
-      value: 1,
-      duration: 6,
-      ease: 'linear',
-      onComplete: () => {
-        this.#spawnDustTween?.kill();
-        this.#spawnPetalTween?.kill();
-        this.#spawnDustTween = null;
-        this.#gommageTween = null;
-        this.#spawnPetalTween = null;
-        
-        // Notificar que el efecto terminó
-        messageState.setEffectRunning(false);
-        
-        // Después de 2 segundos, limpiar el mensaje para mostrar el QR
-        setTimeout(() => {
-          if (this.#currentTextMesh) {
-            this.#scene.remove(this.#currentTextMesh);
-            this.#currentTextMesh.geometry.dispose();
-            this.#currentTextMesh.material.dispose();
-            this.#currentTextMesh = null;
+    // Iniciar el efecto del texto 1 segundo después
+    setTimeout(() => {
+      // Animar de 1 (invisible) a 0 (visible) - efecto inverso
+      this.#gommageTween = gsap.to(this.#uProgress, {
+        value: 0,
+        duration: 6,
+        ease: 'linear',
+        onComplete: async () => {
+          // Detener las partículas
+          this.#spawnDustTween?.kill();
+          this.#spawnPetalTween?.kill();
+          this.#spawnDustTween = null;
+          this.#gommageTween = null;
+          this.#spawnPetalTween = null;
+          
+          // Notificar que el efecto terminó
+          messageState.setEffectRunning(false);
+          
+          // Marcar el mensaje como mostrado en Firebase
+          if (messageId) {
+            try {
+              await updateMessageStatus(messageId, 'shown');
+              console.log('Mensaje marcado como mostrado:', messageId);
+              
+              // Guardar el último mensaje mostrado
+              const messageText = this.#currentMessage?.text || '';
+              messageState.setLastShownMessage(messageText);
+            } catch (error) {
+              console.error('Error al marcar mensaje como mostrado:', error);
+            }
           }
-          // Resetear el mensaje para mostrar el QR
-          messageState.setMessage('');
-        }, 2000);
-      },
-    });
+          
+          // El mensaje permanece visible, no se limpia
+          // Marcar que ya no está mostrando mensaje para procesar el siguiente
+          this.#isShowingMessage = false;
+          
+          // Procesar el siguiente mensaje de la cola después de un breve delay
+          setTimeout(() => {
+            this.processQueue();
+          }, 1000);
+        },
+      });
+    }, 1500); // Delay de 1 segundo antes de iniciar el efecto del texto
   }
 
   resetGommage() {

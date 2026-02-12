@@ -24,7 +24,7 @@ export default class MSDFText {
     const textGeometry = new MSDFTextGeometry({
       text,
       font: fontData,
-      width: 1000,
+      width: 800,
       align: 'center',
     });
 
@@ -54,8 +54,13 @@ export default class MSDFText {
   getRandomPositionInMesh() {
     const min = this.#worldPositionBounds.min;
     const max = this.#worldPositionBounds.max;
-    const x = Math.random() * (max.x - min.x) + min.x;
-    const y = Math.random() * (max.y - min.y) + min.y;
+    
+    // Offset para mover el inicio más arriba y a la derecha
+    const offsetX = -0.1; // Más a la derecha
+    const offsetY = 0.7;  // Más arriba
+    
+    const x = Math.random() * (max.x - min.x) + min.x + offsetX;
+    const y = Math.random() * (max.y - min.y) + min.y + offsetY;
     const z = Math.random() * 0.5;
     return new THREE.Vector3(x, y, z);
   }

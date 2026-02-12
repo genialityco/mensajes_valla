@@ -55,7 +55,7 @@ export default class DustParticles {
     this.#spawnPos[id * 3 + 1] = spawnPos.y;
     this.#spawnPos[id * 3 + 2] = spawnPos.z;
     this.#birthLifeSeedScale[id * 4 + 0] = performance.now() * 0.001; // Birth time
-    this.#birthLifeSeedScale[id * 4 + 1] = 4; // Life time
+    this.#birthLifeSeedScale[id * 4 + 1] = 2; // Life time (reducido de 4 a 2 segundos)
     this.#birthLifeSeedScale[id * 4 + 2] = Math.random(); // Random seed
     this.#birthLifeSeedScale[id * 4 + 3] = Math.random() * 0.5 + 0.5; // Scane
 
@@ -78,7 +78,7 @@ export default class DustParticles {
     const aScale = aBirthLifeSeedScale.w;
 
     const uDustColor = uniform(new THREE.Color('#8A8A8A'));
-    const uWindDirection = uniform(new THREE.Vector3(-1, 0, 0).normalize());
+    const uWindDirection = uniform(new THREE.Vector3(0, -1, 0).normalize());
     const uWindStrength = uniform(0.3);
     const uRiseSpeed = uniform(0.1); // constant lift
     const uNoiseScale = uniform(30.0); // start small (frequency)
