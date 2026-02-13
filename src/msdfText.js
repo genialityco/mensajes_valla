@@ -16,13 +16,34 @@ export default class MSDFText {
     perlinTexture,
     fontAtlasTexture
   ) {
-    // Load font data
+    // Load font data with explicit UTF-8 handling
     const response = await fetch('./fonts/Cinzel/Cinzel.json');
+    
+    // Ensure UTF-8 decoding
+    if (!response.ok) {
+      throw new Error(`Failed to load font: ${response.statusText}`);
+    }
+    
     const fontData = await response.json();
+
+    // Normalize text to ensure proper UTF-8 encoding
+    const normalizedText = text.normalize('NFC');
+    
+    // Debug: log text and character codes
+    console.log('Original text:', text);
+    console.log('Normalized text:', normalizedText);
+    console.log('Character codes:', Array.from(normalizedText).map(c => `${c}:${c.charCodeAt(0)}`).join(', '));
+    
+    // Debug: check if font has the characters
+    const fontChars = fontData.chars.map(c => c.char);
+    const missingChars = Array.from(normalizedText).filter(c => !fontChars.includes(c));
+    if (missingChars.length > 0) {
+      console.warn('Missing characters in font:', missingChars);
+    }
 
     // Create text geometry
     const textGeometry = new MSDFTextGeometry({
-      text,
+      text: normalizedText,
       font: fontData,
       width: 700,
       align: 'center',

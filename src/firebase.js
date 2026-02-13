@@ -32,6 +32,9 @@ export async function createMessage(text) {
   const newMessageRef = push(messagesRef);
   const messageId = newMessageRef.key;
   
+  // Normalizar el texto para asegurar codificación UTF-8 consistente
+  const normalizedText = text.normalize('NFC');
+  
   // Obtener el último order para asignar el siguiente
   const snapshot = await get(messagesRef);
   let maxOrder = 0;
@@ -46,7 +49,7 @@ export async function createMessage(text) {
   }
   
   const messageData = {
-    text: text,
+    text: normalizedText,
     status: 'pending',
     createdAt: Date.now(),
     order: maxOrder + 1
@@ -66,7 +69,8 @@ export async function updateMessageStatus(messageId, status, correctedText = nul
   const updates = { status };
   
   if (correctedText) {
-    updates.text = correctedText;
+    // Normalizar el texto corregido para asegurar codificación UTF-8 consistente
+    updates.text = correctedText.normalize('NFC');
   }
   
   if (status === 'shown') {
