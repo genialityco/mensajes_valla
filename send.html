@@ -225,12 +225,55 @@
       max-width: 60%;
       text-align: right;
     }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .back-link:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .page-wrapper {
+      width: 100%;
+      max-width: 500px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .back-link {
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>📢 Valla Publicitaria</h1>
-    <p class="subtitle">Envía tu mensaje y aparecerá con un efecto espectacular</p>
+  <div class="page-wrapper">
+    <a href="./index.html" class="back-link">← Ver Valla</a>
+    
+    <div class="container">
+      <h1>📢 Valla Publicitaria</h1>
+      <p class="subtitle">Envía tu mensaje y aparecerá con un efecto espectacular</p>
     
     <div class="info-box">
       <p>Tu mensaje se mostrará en la valla con un efecto de disolución único. ¡Sé creativo!</p>
@@ -257,6 +300,7 @@
     </form>
 
     <div id="status-message" class="message"></div>
+    </div>
   </div>
 
   <script type="module" src="./src/sendMessage.js"></script>

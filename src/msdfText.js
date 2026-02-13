@@ -24,7 +24,7 @@ export default class MSDFText {
     const textGeometry = new MSDFTextGeometry({
       text,
       font: fontData,
-      width: 800,
+      width: 700,
       align: 'center',
     });
 

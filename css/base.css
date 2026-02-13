@@ -209,10 +209,10 @@ a {
   }
 }
 
-/* QR Overlay Styles - Arriba a la derecha */
+/* QR Overlay Styles - Abajo a la derecha */
 #qr-overlay {
   position: fixed;
-  top: 20px;
+  bottom: 20px;
   right: 20px;
   width: auto;
   height: auto;
@@ -339,9 +339,7 @@ a {
 
 @media screen and (max-width: 768px) {
   #qr-overlay {
-    top: 10px;
-    right: 10px;
-    padding: 15px;
+    display: none !important;
   }
 
   .qr-content {

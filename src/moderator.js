@@ -57,7 +57,7 @@ Responde ÚNICAMENTE con un JSON válido:
     }
     
     // Si es rechazado, correctedText puede ser null
-    const finalCorrectedText = moderation.status === 'rejected' 
+    let finalCorrectedText = moderation.status === 'rejected' 
       ? null 
       : moderation.correctedText;
     

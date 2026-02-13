@@ -35,6 +35,8 @@ export default class GommageOrchestrator {
   #messageQueue = [];
   #currentMessage = null;
   #isShowingMessage = false;
+  #idleTimer = null;
+  #idleTimeout = 30000; // 30 segundos sin mensajes nuevos
 
   constructor() {}
 
@@ -99,19 +101,57 @@ export default class GommageOrchestrator {
     });
 
     // Iniciar auto-moderador
-    autoModerator.start();
+     await autoModerator.start();
 
-    // Escuchar mensajes aprobados de Firebase
+    //Escuchar mensajes aprobados de Firebase
     listenToApprovedMessages((messages) => {
       console.log('Mensajes aprobados recibidos:', messages);
       this.#messageQueue = messages;
       this.processQueue();
     });
+
+    // Mostrar mensaje de invitación al iniciar
+    this.showInvitationMessage();
+  }
+
+  showInvitationMessage() {
+    // Cancelar temporizador anterior si existe
+    if (this.#idleTimer) {
+      clearTimeout(this.#idleTimer);
+      this.#idleTimer = null;
+    }
+
+    // Solo mostrar si no hay mensajes en cola
+    if (this.#messageQueue.length === 0 && !this.#isShowingMessage) {
+      this.updateText('Envía tu mensaje\nEscanea el código QR', null);
+    }
+  }
+
+  startIdleTimer() {
+    // Cancelar temporizador anterior
+    if (this.#idleTimer) {
+      clearTimeout(this.#idleTimer);
+    }
+
+    // Iniciar nuevo temporizador
+    this.#idleTimer = setTimeout(() => {
+      this.showInvitationMessage();
+    }, this.#idleTimeout);
   }
 
   processQueue() {
+    // Cancelar mensaje de invitación si hay mensajes
+    if (this.#idleTimer) {
+      clearTimeout(this.#idleTimer);
+      this.#idleTimer = null;
+    }
+
     // Si ya está mostrando un mensaje o no hay mensajes, no hacer nada
     if (this.#isShowingMessage || this.#messageQueue.length === 0) {
+      // Si no hay mensajes, iniciar temporizador para mostrar invitación
+      if (this.#messageQueue.length === 0 && !this.#isShowingMessage) {
+        this.startIdleTimer();
+      }
       return;
     }
 
@@ -286,6 +326,11 @@ async updateText(newText, messageId = null) {
           setTimeout(() => {
             this.processQueue();
           }, 1000);
+          
+          // Si no hay más mensajes, iniciar temporizador para mostrar invitación
+          if (this.#messageQueue.length === 0) {
+            this.startIdleTimer();
+          }
         },
       });
     }, 1500); // Delay de 1 segundo antes de iniciar el efecto del texto
