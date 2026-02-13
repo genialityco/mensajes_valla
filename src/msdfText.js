@@ -63,7 +63,14 @@ export default class MSDFText {
     mesh.scale.set(textScale, textScale, textScale);
     const meshOffset = -(textGeometry.layout.width / 2) * textScale;
 
-    mesh.position.set(position.x + meshOffset, position.y, position.z);
+    // Calcular offset Y según el número de líneas
+    // 1 línea: 0, 2 líneas: -0.1, 3 líneas: -0.2
+    const lineCount = normalizedText.length/20;
+    const yOffset = lineCount > 1 ? -(lineCount - 1) * 0.35 : 0;
+    console.log("line count: ", lineCount)
+    console.log("offset ", yOffset)
+    
+    mesh.position.set(position.x + meshOffset, position.y + yOffset, position.z);
     mesh.rotation.x = Math.PI;
     // Compute the world position bounds of our text
     textGeometry.computeBoundingBox();
