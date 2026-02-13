@@ -39,7 +39,7 @@ generateBMFont(fontPath, options, (error, textures, font) => {
   }
 
   // Guardar el archivo JSON
-  fs.writeFileSync(outputPath + '.json', font.data);
+  fs.writeFileSync(outputPath + '.json', font.data, 'utf8');
   console.log('✅ Archivo JSON generado:', outputPath + '.json');
 
   // Guardar la textura PNG
